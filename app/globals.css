@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 237 238 233;
+  --surface: 246 246 242;
+  --surface-raised: 255 255 255;
+  --border: 214 214 205;
+  --text: 27 31 38;
+  --text-muted: 100 106 117;
+  --brass: 168 124 44;
+  --brass-strong: 148 108 36;
+  --moss: 63 107 78;
+  --rust: 139 63 48;
+}
+
+.dark {
+  --bg: 16 20 26;
+  --surface: 23 28 36;
+  --surface-raised: 29 36 46;
+  --border: 44 53 66;
+  --text: 232 226 212;
+  --text-muted: 139 147 161;
+  --brass: 200 155 60;
+  --brass-strong: 212 175 84;
+  --moss: 111 160 125;
+  --rust: 184 92 72;
+}
+
+* {
+  border-color: rgb(var(--border));
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--text));
+  font-feature-settings: "ss01" 1, "cv01" 1;
+}
+
+::selection {
+  background-color: rgb(var(--brass) / 0.28);
+  color: rgb(var(--text));
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--brass-strong));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Monaco editor container needs an explicit height to render */
+.monaco-shell {
+  height: 420px;
+}
+
+/* Custom scrollbar, quiet and thin, matches the field-journal tone */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--border));
+  border-radius: 999px;
+  border: 2px solid rgb(var(--bg));
+}
+
+.font-tabular {
+  font-variant-numeric: tabular-nums;
+}
