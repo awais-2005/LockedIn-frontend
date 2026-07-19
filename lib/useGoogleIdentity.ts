@@ -30,6 +30,12 @@ const SCRIPT_SRC = "https://accounts.google.com/gsi/client";
 export function useGoogleIdentity({ onToken }: { onToken: (idToken: string) => void }) {
   const buttonRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
+  const onTokenRef = useRef(onToken);
+
+  // Keep the latest callback without making the init effect below depend on it
+  useEffect(() => {
+    onTokenRef.current = onToken;
+  }, [onToken]);
 
   useEffect(() => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -39,7 +45,7 @@ export function useGoogleIdentity({ onToken }: { onToken: (idToken: string) => v
       if (!window.google || !buttonRef.current) return;
       window.google.accounts.id.initialize({
         client_id: clientId!,
-        callback: (response) => onToken(response.credential),
+        callback: (response) => onTokenRef.current(response.credential),
       });
       window.google.accounts.id.renderButton(buttonRef.current, {
         theme: "outline",
@@ -67,9 +73,7 @@ export function useGoogleIdentity({ onToken }: { onToken: (idToken: string) => v
     script.defer = true;
     script.onload = init;
     document.head.appendChild(script);
-    // Intentionally not removing the script on unmount — it's cheap to keep
-    // cached for other auth pages in the session.
-  }, [onToken]);
+  }, []); // empty array now — runs once, not on every re-render
 
   return { buttonRef, ready };
 }
