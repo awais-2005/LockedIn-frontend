@@ -17,6 +17,9 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [{ source: '/api/:path*', destination: 'https://lockedin-lj34.onrender.com/api/:path*' }];
+  }
 };
 
 module.exports = nextConfig;
