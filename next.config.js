@@ -13,7 +13,10 @@ const nextConfig = {
     return [
       {
         source: "/(.*)",
-        headers: [{ key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" }],
+        headers: [{
+          key: "Cross-Origin-Opener-Policy",
+          value: "unsafe-none",
+        }],
       },
     ];
   },
