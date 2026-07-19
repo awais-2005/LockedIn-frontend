@@ -1,6 +1,6 @@
-# RoadmapAI — Frontend
+# LockedIn — Frontend
 
-The desktop-focused Next.js frontend for RoadmapAI: upload a course document, get a
+The desktop-focused Next.js frontend for LockedIn: upload a course document, get a
 locked day-by-day roadmap with AI lessons, a scoped tutor, coding/theory challenges,
 and checkpoint quizzes.
 

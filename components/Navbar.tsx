@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ThemeToggle } from "./ThemeToggle";
 import { useLogout, useMe } from "@/lib/queries";
+import Image from "next/image";
 
 export interface Crumb {
   label: string;
@@ -60,19 +61,46 @@ export function Navbar({ crumbs = [] }: { crumbs?: Crumb[] }) {
             <button
               type="button"
               onClick={() => setMenuOpen((o) => !o)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface font-mono text-xs font-medium text-ink hover:border-brass/60"
+              className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-border bg-surface font-mono text-xs font-medium text-ink hover:border-brass/60"
               aria-haspopup="menu"
               aria-expanded={menuOpen}
             >
-              {initial}
+              {data?.user?.profile_picture_url ? (
+                <Image
+                  src={data.user.profile_picture_url}
+                  alt={data.user.full_name}
+                  width={32}
+                  height={32}
+                  className="h-full w-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                initial
+              )}
             </button>
             {menuOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
                 <div className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-lg border border-border bg-raised shadow-lg animate-fade-up">
-                  <div className="border-b border-border px-3.5 py-2.5">
-                    <p className="truncate text-sm font-medium text-ink">{data?.user?.full_name}</p>
-                    <p className="truncate text-xs text-muted">{data?.user?.email}</p>
+                  <div className="flex items-center gap-2.5 border-b border-border px-3.5 py-2.5">
+                    {data?.user?.profile_picture_url ? (
+                      <Image
+                        src={data.user.profile_picture_url}
+                        alt={data.user.full_name}
+                        width={32}
+                        height={32}
+                        className="h-8 w-8 shrink-0 rounded-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border font-mono text-xs text-ink">
+                        {initial}
+                      </span>
+                    )}
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-ink">{data?.user?.full_name}</p>
+                      <p className="truncate text-xs text-muted">{data?.user?.email}</p>
+                    </div>
                   </div>
                   <button
                     type="button"
