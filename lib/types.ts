@@ -52,6 +52,8 @@ export interface Challenge {
   prompt: string;
   language: string | null;
   difficulty: string;
+  is_solved: boolean;
+  submitted_answer: string | null;
 }
 
 export interface DayDetail {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type { Challenge, ChallengeSubmitResult } from "@/lib/types";
 import { useSubmitChallenge } from "@/lib/queries";
@@ -22,7 +22,20 @@ export function ChallengePanel({
   onResultsChange?: (results: Record<string, ChallengeSubmitResult>) => void;
 }) {
   const [index, setIndex] = useState(0);
-  const [results, setResults] = useState<Record<string, ChallengeSubmitResult>>({});
+  const [results, setResults] = useState<Record<string, ChallengeSubmitResult>>(() =>
+    Object.fromEntries(
+      challenges
+        .filter((c) => c.is_solved)
+        .map((c) => [c.id, { is_correct: true, feedback: "Already solved — nice work." }])
+    )
+  );
+
+  // Surface already-solved challenges to the parent immediately, so
+  // "Mark day complete" doesn't require re-submitting solved work.
+  useEffect(() => {
+    if (Object.keys(results).length > 0) onResultsChange?.(results);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (challenges.length === 0) {
     return (
@@ -106,12 +119,14 @@ function TheoryChallenge({
   challenge: Challenge;
   onResult: (result: ChallengeSubmitResult) => void;
 }) {
-  const [answer, setAnswer] = useState("");
-  const [result, setResult] = useState<ChallengeSubmitResult | null>(null);
+  const [answer, setAnswer] = useState(challenge.submitted_answer ?? "");
+  const [result, setResult] = useState<ChallengeSubmitResult | null>(
+    challenge.is_solved ? { is_correct: true, feedback: "Already solved — nice work." } : null
+  );
   const submit = useSubmitChallenge(courseId, dayNumber);
 
   function handleSubmit() {
-    if (!answer.trim() || submit.isPending) return;
+    if (challenge.is_solved || !answer.trim() || submit.isPending) return;
     submit.mutate(
       { challengeId: challenge.id, content: answer },
       {
@@ -131,12 +146,13 @@ function TheoryChallenge({
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
         rows={6}
+        readOnly={challenge.is_solved}
         placeholder="Write your answer…"
-        className="w-full resize-y rounded-lg border border-border bg-bg px-3.5 py-3 text-sm text-ink placeholder:text-muted/70 focus:outline-none focus:ring-2 focus:ring-brass-strong/50"
+        className="w-full resize-y rounded-lg border border-border bg-bg px-3.5 py-3 text-sm text-ink placeholder:text-muted/70 focus:outline-none focus:ring-2 focus:ring-brass-strong/50 disabled:opacity-70"
       />
       <div className="mt-4 flex justify-end">
-        <Button onClick={handleSubmit} disabled={!answer.trim() || submit.isPending}>
-          {submit.isPending ? <Spinner className="text-[#14171C]" /> : "Submit"}
+        <Button onClick={handleSubmit} disabled={challenge.is_solved || !answer.trim() || submit.isPending}>
+          {submit.isPending ? <Spinner className="text-[#14171C]" /> : challenge.is_solved ? "Solved" : "Submit"}
         </Button>
       </div>
 

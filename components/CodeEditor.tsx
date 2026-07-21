@@ -28,8 +28,10 @@ export function CodeEditor({
   onResult?: (result: ChallengeSubmitResult) => void;
 }) {
   const { resolvedTheme } = useTheme();
-  const [code, setCode] = useState("");
-  const [result, setResult] = useState<ChallengeSubmitResult | null>(null);
+  const [code, setCode] = useState(challenge.submitted_answer ?? "");
+  const [result, setResult] = useState<ChallengeSubmitResult | null>(
+    challenge.is_solved ? { is_correct: true, feedback: "Already solved — nice work." } : null
+  );
   const submit = useSubmitChallenge(courseId, dayNumber);
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
 
@@ -62,7 +64,7 @@ export function CodeEditor({
   );
 
   function handleSubmit() {
-    if (!code.trim() || submit.isPending) return;
+    if (challenge.is_solved || !code.trim() || submit.isPending) return;
     submit.mutate(
       { challengeId: challenge.id, content: code },
       {
@@ -104,14 +106,15 @@ export function CodeEditor({
             scrollBeyondLastLine: false,
             contextmenu: false,
             automaticLayout: true,
+            readOnly: challenge.is_solved,
           }}
         />
       </div>
 
       <div className="flex items-center justify-between gap-4 border-t border-border px-5 py-4">
         <p className="text-xs text-muted">Paste is disabled here — write it out.</p>
-        <Button onClick={handleSubmit} disabled={!code.trim() || submit.isPending}>
-          {submit.isPending ? <Spinner className="text-[#14171C]" /> : "Submit"}
+        <Button onClick={handleSubmit} disabled={challenge.is_solved || !code.trim() || submit.isPending}>
+          {submit.isPending ? <Spinner className="text-[#14171C]" /> : challenge.is_solved ? "Solved" : "Submit"}
         </Button>
       </div>
 
