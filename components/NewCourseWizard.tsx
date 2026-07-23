@@ -16,7 +16,7 @@ import { Spinner } from "./ui/Spinner";
 import { cn } from "@/lib/utils";
 
 const confirmSchema = z.object({
-  chosen_days: z.coerce.number().int().min(1, "At least 1 day").max(365, "365 days max"),
+  chosen_days: z.coerce.number().int().min(1, "At least 1 day").max(1000, "1000 days max"),
 });
 type ConfirmValues = z.infer<typeof confirmSchema>;
 
@@ -118,7 +118,7 @@ export function NewCourseWizard() {
                   id="chosen_days"
                   type="number"
                   min={1}
-                  max={365}
+                  max={1000}
                   className="font-tabular"
                   {...register("chosen_days")}
                 />
